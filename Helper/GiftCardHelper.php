@@ -41,7 +41,7 @@ class GiftCardHelper
     ) {
         $this->ruleFactory = $ruleFactory;
         $this->logger = $giftyLogger;
-        $this->client = new GiftyClient($scopeConfig->getValue('gifty/general/api_key'));
+        $this->client = new GiftyClient((string) $scopeConfig->getValue('gifty/general/api_key'));
     }
 
     /**
