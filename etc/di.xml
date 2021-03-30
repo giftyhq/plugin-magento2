@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <type name="Gifty\Magento\Logger\GiftyLogger">
+        <arguments>
+            <argument name="name" xsi:type="string">GiftyLogger</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="debug" xsi:type="object">Gifty\Magento\Logger\Handler\LogHandler</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\SalesRule\Model\ResourceModel\Rule\Collection">
+        <plugin name="gifty_add_sales_rule" type="Gifty\Magento\Plugin\SalesRule\RuleCollection" sortOrder="10"/>
+    </type>
+
+    <type name="Magento\SalesRule\Model\Rule">
+        <plugin name="gifty_gift_card_rule" type="Gifty\Magento\Plugin\SalesRule\RuleModelLoad" sortOrder="10"/>
+    </type>
+
+    <type name="Magento\SalesRule\Model\ResourceModel\Coupon\Usage">
+        <plugin name="gifty_gift_card_coupon_usage" type="Gifty\Magento\Plugin\SalesRule\CouponUsage" sortOrder="10"/>
+    </type>
+
+    <type name="Magento\SalesRule\Model\Coupon">
+        <plugin name="gifty_gift_card_coupon" type="Gifty\Magento\Plugin\SalesRule\CouponModelLoad" sortOrder="10"/>
+    </type>
+
+    <type name="Magento\Quote\Model\QuoteManagement">
+        <plugin name="gifty_gift_card_redeem" type="Gifty\Magento\Plugin\Quote\GiftCardRedeem" sortOrder="10"/>
+    </type>
+
+    <type name="Magento\Sales\Model\ResourceModel\Order">
+        <plugin name="gifty_gift_card_capture" type="Gifty\Magento\Plugin\Sales\TransactionCapture" sortOrder="10"/>
+    </type>
+
+    <type name="Magento\Sales\Model\Service\OrderService">
+        <plugin name="gifty_gift_card_release" type="Gifty\Magento\Plugin\Sales\TransactionRelease" sortOrder="10"/>
+    </type>
+</config>

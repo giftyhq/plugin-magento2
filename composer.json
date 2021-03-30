@@ -1,0 +1,25 @@
+{
+  "name": "gifty/plugin-magento2",
+  "description": "Gifty module for accepting Gifty gift cards in your Magento2 shop.",
+  "type": "magento2-module",
+  "version": "1.0.0",
+  "license": "MIT",
+  "require": {
+    "php": "~7.4.0||~8.0.0",
+    "gifty/gifty-php": "^1.1"
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://repo.magento.com/"
+    }
+  ],
+  "autoload": {
+    "files": [
+      "registration.php"
+    ],
+    "psr-4": {
+      "Gifty\\Magento\\": ""
+    }
+  }
+}
