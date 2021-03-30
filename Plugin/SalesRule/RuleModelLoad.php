@@ -8,8 +8,14 @@ use Magento\SalesRule\Model\Rule;
 
 class RuleModelLoad
 {
-    private GiftyHelper $giftyHelper;
-    private GiftCardHelper $giftCardHelper;
+    /**
+     * @var GiftyHelper
+     */
+    private $giftyHelper;
+    /**
+     * @var GiftCardHelper
+     */
+    private $giftCardHelper;
 
     public function __construct(
         GiftyHelper $giftyHelper,

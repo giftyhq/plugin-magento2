@@ -18,13 +18,34 @@ use Magento\Sales\Model\OrderRepository;
 
 class GiftCardRedeem
 {
-    private QuoteRepository $quoteRepository;
-    private OrderRepository $orderRepository;
-    private GiftyHelper $giftyHelper;
-    private TotalsCollector $totalsCollector;
-    private string $giftCardCode;
-    private Transaction $redeemTransaction;
-    private GiftCardHelper $giftCardHelper;
+    /**
+     * @var QuoteRepository
+     */
+    private $quoteRepository;
+    /**
+     * @var OrderRepository
+     */
+    private $orderRepository;
+    /**
+     * @var GiftyHelper
+     */
+    private $giftyHelper;
+    /**
+     * @var TotalsCollector
+     */
+    private $totalsCollector;
+    /**
+     * @var string
+     */
+    private $giftCardCode;
+    /**
+     * @var Transaction
+     */
+    private $redeemTransaction;
+    /**
+     * @var GiftCardHelper
+     */
+    private $giftCardHelper;
 
     public function __construct(
         QuoteRepository $quoteRepository,

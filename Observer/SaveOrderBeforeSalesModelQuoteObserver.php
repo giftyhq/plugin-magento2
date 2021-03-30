@@ -10,7 +10,10 @@ use Magento\Sales\Model\Order;
 
 class SaveOrderBeforeSalesModelQuoteObserver implements ObserverInterface
 {
-    private Copy $objectCopyService;
+    /**
+     * @var Copy
+     */
+    private $objectCopyService;
 
     public function __construct(Copy $objectCopyService)
     {

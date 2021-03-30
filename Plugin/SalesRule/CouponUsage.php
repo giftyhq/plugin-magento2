@@ -9,8 +9,14 @@ use Magento\SalesRule\Model\ResourceModel\Coupon\Usage;
 
 class CouponUsage
 {
-    private GiftyHelper $giftyHelper;
-    private GiftCardHelper $giftCardHelper;
+    /**
+     * @var GiftyHelper
+     */
+    private $giftyHelper;
+    /**
+     * @var GiftCardHelper
+     */
+    private $giftCardHelper;
 
     public function __construct(
         GiftyHelper $giftyHelper,

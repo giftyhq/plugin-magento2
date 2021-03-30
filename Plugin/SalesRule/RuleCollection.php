@@ -11,11 +11,23 @@ use Magento\SalesRule\Model\ResourceModel\Rule\Collection;
 
 class RuleCollection
 {
-    private GiftyHelper $giftyHelper;
-    private GiftCardHelper $giftCardHelper;
+    /**
+     * @var GiftyHelper
+     */
+    private $giftyHelper;
+    /**
+     * @var GiftCardHelper
+     */
+    private $giftCardHelper;
 
-    protected ?string $couponCode = null;
-    protected bool $passedRule = false;
+    /**
+     * @var string|null
+     */
+    protected $couponCode = null;
+    /**
+     * @var bool
+     */
+    protected $passedRule = false;
 
     public function __construct(
         GiftyHelper $giftyHelper,

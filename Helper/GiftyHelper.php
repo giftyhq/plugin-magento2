@@ -12,10 +12,19 @@ use Magento\Framework\Pricing\Helper\Data;
 
 class GiftyHelper extends AbstractHelper
 {
-    public GiftyLogger $logger;
+    /**
+     * @var GiftyLogger
+     */
+    public $logger;
 
-    private Escaper $escaper;
-    private Data $pricingHelper;
+    /**
+     * @var Escaper
+     */
+    private $escaper;
+    /**
+     * @var Data
+     */
+    private $pricingHelper;
 
     public function __construct(
         Context $context,

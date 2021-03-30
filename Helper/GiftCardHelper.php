@@ -12,12 +12,27 @@ use Magento\SalesRule\Model\RuleFactory;
 
 class GiftCardHelper
 {
-    public GiftyClient $client;
+    /**
+     * @var GiftyClient
+     */
+    public $client;
 
-    private RuleFactory $ruleFactory;
-    private GiftyLogger $logger;
-    private array $giftCards = [];
-    private array $salesRules = [];
+    /**
+     * @var RuleFactory
+     */
+    private $ruleFactory;
+    /**
+     * @var GiftyLogger
+     */
+    private $logger;
+    /**
+     * @var array
+     */
+    private $giftCards = [];
+    /**
+     * @var array
+     */
+    private $salesRules = [];
 
     public function __construct(
         RuleFactory $ruleFactory,

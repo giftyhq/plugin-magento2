@@ -11,9 +11,18 @@ use Magento\Sales\Model\ResourceModel\Order as ResourceModelOrder;
 
 class TransactionCapture
 {
-    private OrderRepository $orderRepository;
-    private GiftyHelper $giftyHelper;
-    private GiftCardHelper $giftCardHelper;
+    /**
+     * @var OrderRepository
+     */
+    private $orderRepository;
+    /**
+     * @var GiftyHelper
+     */
+    private $giftyHelper;
+    /**
+     * @var GiftCardHelper
+     */
+    private $giftCardHelper;
 
     public function __construct(
         OrderRepository $orderRepository,

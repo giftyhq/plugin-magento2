@@ -9,8 +9,14 @@ use Magento\SalesRule\Model\Coupon;
 
 class CouponModelLoad
 {
-    private GiftyHelper $giftyHelper;
-    private GiftCardHelper $giftCardHelper;
+    /**
+     * @var GiftyHelper
+     */
+    private $giftyHelper;
+    /**
+     * @var GiftCardHelper
+     */
+    private $giftCardHelper;
 
     public function __construct(
         GiftyHelper $giftyHelper,
