@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * @var \Magento\Framework\View\Element\AbstractBlock $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+$hasGiftCardCode = (bool)strlen($block->getGiftCardCode());
+?>
+
+<div class="cart-discount">
+    <div class="block discount"
+         id="block-gifty-gift-card"
+         data-mage-init='{"collapsible":{"active": <?= $hasGiftCardCode ? 'true' : 'false' ?>, "openedState": "active", "saveState": false}}'
+    >
+        <div class="title" data-role="title">
+            <strong id="block-gift-card-heading" role="heading" aria-level="2"><?= $escaper->escapeHtml(__('Apply Gifty Gift Card')) ?></strong>
+        </div>
+        <div class="content" data-role="content" aria-labelledby="block-gift-card-heading">
+            <form id="gifty-gift-card-form"
+                  action="<?= $escaper->escapeUrl($block->getUrl('gifty/cart/card')) ?>"
+                  method="post">
+                <div class="fieldset gifty_gift_card">
+                    <input type="hidden" name="remove" id="remove-gifty-gift-card" value="0"/>
+                    <div class="field">
+                        <label for="gifty_gift_card_code"
+                               class="label"><span><?= $escaper->escapeHtml(__('Enter gift card code')) ?></span></label>
+                        <div class="control">
+                            <input type="text"
+                                   class="input-text"
+                                   id="gifty_gift_card_code"
+                                   name="gifty_gift_card_code"
+                                   value="<?= $escaper->escapeHtmlAttr($block->getGiftCardCode()) ?>"
+                                   placeholder="<?= $escaper->escapeHtmlAttr(__('Enter gift card code')) ?>"
+                                <?php if ($hasGiftCardCode) : ?>
+                                    disabled="disabled"
+                                <?php endif; ?>
+                            />
+                        </div>
+                    </div>
+                    <div class="actions-toolbar">
+                        <?php if (!$hasGiftCardCode) : ?>
+                            <div class="primary">
+                                <button class="action apply primary" type="button"
+                                        value="<?= $escaper->escapeHtmlAttr(__('Apply Gift Card')) ?>">
+                                    <span><?= $escaper->escapeHtml(__('Apply Gift Card')) ?></span>
+                                </button>
+                            </div>
+                        <?php else : ?>
+                            <div class="primary">
+                                <button type="button" class="action cancel primary"
+                                        value="<?= $escaper->escapeHtmlAttr(__('Cancel Gift Card')) ?>">
+                                    <span><?= $escaper->escapeHtml(__('Cancel Gift Card')) ?></span></button>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
