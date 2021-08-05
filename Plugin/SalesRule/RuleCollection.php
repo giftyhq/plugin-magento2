@@ -58,13 +58,17 @@ class RuleCollection
         $now = null,
         Address $address = null
     ) {
-        $this->giftyHelper->logger->debug('RuleCollection beforeSetValidationFilter logger');
-
-        if ($couponCode === '' || $couponCode === null) {
+        if ($couponCode === '' || $couponCode === null || strlen($couponCode) < GiftCardHelper::GIFT_CARD_STRING_LENGTH) {
             return null;
         }
 
-        $this->couponCode = $this->giftyHelper->sanitizeCouponInput($couponCode);
+        $couponCode = $this->giftyHelper->sanitizeCouponInput($couponCode);
+
+        if(strlen($couponCode) === GiftCardHelper::GIFT_CARD_STRING_LENGTH) {
+            $this->giftyHelper->logger->debug('RuleCollection beforeSetValidationFilter');
+
+            $this->couponCode = $couponCode;
+        }
 
         return null;
     }
@@ -76,6 +80,8 @@ class RuleCollection
         ) {
             return $result;
         }
+
+        $this->giftyHelper->logger->debug('RuleCollection afterLoad');
 
         $giftCard = $this->giftCardHelper->getGiftCard($this->couponCode);
 

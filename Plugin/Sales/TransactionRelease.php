@@ -36,8 +36,6 @@ class TransactionRelease
 
     public function afterCancel(OrderService $subject, bool $result, $orderId): bool
     {
-        $this->giftyHelper->logger->debug('afterCancel!');
-
         if (!$result) {
             return $result;
         }
@@ -47,6 +45,8 @@ class TransactionRelease
         if ($order->getGiftyTransactionIdRedeem() === null) {
             return $result;
         }
+
+        $this->giftyHelper->logger->debug('afterCancel');
 
         $giftCard = $this->giftCardHelper->getGiftCard($order->getGiftyGiftCardCode());
         $transaction = null;

@@ -12,6 +12,8 @@ use Magento\SalesRule\Model\RuleFactory;
 
 class GiftCardHelper
 {
+    const GIFT_CARD_STRING_LENGTH = 16;
+
     /**
      * @var GiftyClient
      */
@@ -55,7 +57,7 @@ class GiftCardHelper
     {
         $this->logger->debug('GiftCardHelper getGiftCard: ' . $code);
 
-        if (isset($this->giftCards[$code]) === false) {
+        if (property_exists((object) $this->giftCards, $code) === false) {
             $this->logger->debug('Fetching Gift Card from API: ' . $code);
 
             try {

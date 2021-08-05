@@ -42,13 +42,18 @@ class CouponUsage
         $couponId,
         $increment = true
     ): ?array {
-        $this->giftyHelper->logger->debug('CouponUsage beforeUpdateCustomerCouponTimesUsed logger');
-
-        if ($couponId === '' || $couponId === null) {
+        if ($couponId === '' || $couponId === null || strlen($couponId) < GiftCardHelper::GIFT_CARD_STRING_LENGTH) {
             return null;
         }
 
+        $this->giftyHelper->logger->debug('CouponUsage beforeUpdateCustomerCouponTimesUsed');
+
         $code = $this->giftyHelper->sanitizeCouponInput($couponId);
+
+        if(strlen($code) !== GiftCardHelper::GIFT_CARD_STRING_LENGTH) {
+            return null;
+        }
+
         $giftCard = $this->giftCardHelper->getGiftCard($code);
         $increment = false;
 
