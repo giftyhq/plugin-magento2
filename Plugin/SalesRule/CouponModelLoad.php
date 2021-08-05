@@ -41,9 +41,15 @@ class CouponModelLoad
     {
         if ($result->getCouponId() === null &&
             $field === 'code' &&
-            $modelId !== null
+            $modelId !== null &&
+            strlen($modelId) >= GiftCardHelper::GIFT_CARD_STRING_LENGTH
         ) {
             $code = $this->giftyHelper->sanitizeCouponInput($modelId);
+
+            if(strlen($code) !== GiftCardHelper::GIFT_CARD_STRING_LENGTH) {
+                return $result;
+            }
+
             $giftCard = $this->giftCardHelper->getGiftCard($code);
 
             if ($giftCard !== null && $giftCard->isRedeemable()) {

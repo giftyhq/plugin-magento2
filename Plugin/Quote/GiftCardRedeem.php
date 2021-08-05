@@ -76,19 +76,25 @@ class GiftCardRedeem
      */
     public function beforeSubmit(QuoteManagement $subject, Quote $quote, array $orderData = []): ?array
     {
-        $this->giftyHelper->logger->debug('beforeSubmit!');
-
-        if ($quote->getCouponCode() === '' || $quote->getCouponCode() === null) {
+        if ($quote->getCouponCode() === '' || $quote->getCouponCode() === null || strlen($quote->getCouponCode()) < GiftCardHelper::GIFT_CARD_STRING_LENGTH) {
             return null;
         }
 
-        $this->giftCardCode = $this->giftyHelper->sanitizeCouponInput($quote->getCouponCode());
+        $couponCode = $this->giftyHelper->sanitizeCouponInput($quote->getCouponCode());
+
+        if(strlen($couponCode) !== GiftCardHelper::GIFT_CARD_STRING_LENGTH) {
+            return null;
+        }
+
+        $this->giftCardCode = $couponCode;
         $giftCard = $this->giftCardHelper->getGiftCard($this->giftCardCode);
 
         // Not a Gifty gift card
         if ($giftCard === null) {
             return null;
         }
+
+        $this->giftyHelper->logger->debug('beforeSubmit');
 
         $calculationQuote = clone $quote;
         $calculationQuote->setId(null);
@@ -133,11 +139,11 @@ class GiftCardRedeem
 
     public function afterSubmit(QuoteManagement $subject, ?OrderInterface $order): ?OrderInterface
     {
-        $this->giftyHelper->logger->debug('afterSubmit!');
-
         if ($order === null || $this->redeemTransaction === null) {
             return $order;
         }
+
+        $this->giftyHelper->logger->debug('afterSubmit');
 
         $order->addCommentToStatusHistory(__(
             "Reserved amount of %1 on Gift Card \"%2\". Transaction ID: \"%3\"",

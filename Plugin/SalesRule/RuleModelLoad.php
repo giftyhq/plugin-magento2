@@ -27,13 +27,19 @@ class RuleModelLoad
 
     public function afterLoad(Rule $rule, Rule $result, $ruleId, $field = null): Rule
     {
-        $this->giftyHelper->logger->debug('RuleModelLoad afterLoad logger');
-
         if ($result->getCouponCode() === null &&
             $field === null &&
-            $ruleId !== null
+            $ruleId !== null &&
+            strlen($ruleId) >= GiftCardHelper::GIFT_CARD_STRING_LENGTH
         ) {
+            $this->giftyHelper->logger->debug('RuleModelLoad afterLoad');
+
             $code = $this->giftyHelper->sanitizeCouponInput($ruleId);
+
+            if (strlen($code) !== GiftCardHelper::GIFT_CARD_STRING_LENGTH) {
+                return $result;
+            }
+
             $giftCard = $this->giftCardHelper->getGiftCard($code);
 
             if ($giftCard !== null && $giftCard->isRedeemable()) {
