@@ -69,7 +69,7 @@ class OrderFailureTransactionRelease implements ObserverInterface
         }
 
         if ($giftCard === null || $transaction === null) {
-            $this->giftyHelper->logger->debug(__(
+            $this->giftyHelper->logger->critical(__(
                 "Failed to release transaction on Gift Card \"%1\". Transaction ID: \"%2\". Order ID: \"%3\".",
                 $order->getGiftyGiftCardCode(),
                 $order->getGiftyTransactionIdRedeem(),
