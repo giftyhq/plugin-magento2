@@ -4,26 +4,26 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "52e9ab831a07758a2270aeb6a3fc98ff",
+    "content-hash": "1832600362b451ec8d8666fd05617a24",
     "packages": [
         {
             "name": "gifty/gifty-php",
-            "version": "V1.1.0",
+            "version": "V1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giftyhq/gifty-php.git",
-                "reference": "12569ee7ad71345c3b27a218b4e876ffeeaf986a"
+                "reference": "1f4431ce49057911ebe3b7ca5f3df5bca4fa0dcf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giftyhq/gifty-php/zipball/12569ee7ad71345c3b27a218b4e876ffeeaf986a",
-                "reference": "12569ee7ad71345c3b27a218b4e876ffeeaf986a",
+                "url": "https://api.github.com/repos/giftyhq/gifty-php/zipball/1f4431ce49057911ebe3b7ca5f3df5bca4fa0dcf",
+                "reference": "1f4431ce49057911ebe3b7ca5f3df5bca4fa0dcf",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "ext-json": "*",
-                "php": "~7.3.0||~7.4.0||~8.0.0",
+                "php": "~7.3.0||~7.4.0||~8.0.0||~8.1.0",
                 "psr/http-message": "^1.0"
             },
             "require-dev": {
@@ -55,7 +55,11 @@
                 "api",
                 "gifty"
             ],
-            "time": "2021-03-26T20:23:53+00:00"
+            "support": {
+                "email": "info@gifty.nl",
+                "source": "https://github.com/giftyhq/gifty-php/tree/V1.1.1"
+            },
+            "time": "2021-10-21T17:38:01+00:00"
         },
         {
             "name": "psr/http-message",
@@ -105,6 +109,9 @@
                 "request",
                 "response"
             ],
+            "support": {
+                "source": "https://github.com/php-fig/http-message/tree/master"
+            },
             "time": "2016-08-06T14:39:51+00:00"
         }
     ],
@@ -115,8 +122,8 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "~7.3.0||~7.4.0||~8.0.0"
+        "php": "~7.3.0||~7.4.0||~8.0.0||~8.0.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.1.0"
 }
