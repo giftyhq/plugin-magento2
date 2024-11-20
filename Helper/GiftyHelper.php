@@ -50,6 +50,7 @@ class GiftyHelper extends AbstractHelper
     public function sanitizeCouponInput(string $code): string
     {
         $code = GiftCard::cleanCode($code);
+        $code = strtoupper($code);
 
         return $this->escaper
             ->escapeHtml($code);
