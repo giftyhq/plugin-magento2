@@ -42,7 +42,7 @@ class CouponUsage
         $couponId,
         $increment = true
     ): ?array {
-        if ($couponId === '' || $couponId === null || strlen($couponId) < GiftCardHelper::GIFT_CARD_STRING_LENGTH) {
+        if ($couponId === '' || $couponId === null) {
             return null;
         }
 
@@ -50,7 +50,7 @@ class CouponUsage
 
         $code = $this->giftyHelper->sanitizeCouponInput($couponId);
 
-        if(strlen($code) !== GiftCardHelper::GIFT_CARD_STRING_LENGTH) {
+        if(!$this->giftCardHelper->isValidGiftCardFormat($code)) {
             return null;
         }
 

@@ -58,13 +58,13 @@ class RuleCollection
         $now = null,
         Address $address = null
     ) {
-        if ($couponCode === '' || $couponCode === null || strlen($couponCode) < GiftCardHelper::GIFT_CARD_STRING_LENGTH) {
+        if ($couponCode === '' || $couponCode === null) {
             return null;
         }
 
         $couponCode = $this->giftyHelper->sanitizeCouponInput($couponCode);
 
-        if(strlen($couponCode) === GiftCardHelper::GIFT_CARD_STRING_LENGTH) {
+        if($this->giftCardHelper->isValidGiftCardFormat($couponCode)) {
             $this->giftyHelper->logger->debug('RuleCollection beforeSetValidationFilter');
 
             $this->couponCode = $couponCode;

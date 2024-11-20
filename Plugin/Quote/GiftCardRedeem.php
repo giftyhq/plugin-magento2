@@ -76,13 +76,13 @@ class GiftCardRedeem
      */
     public function beforeSubmit(QuoteManagement $subject, Quote $quote, array $orderData = []): ?array
     {
-        if ($quote->getCouponCode() === '' || $quote->getCouponCode() === null || strlen($quote->getCouponCode()) < GiftCardHelper::GIFT_CARD_STRING_LENGTH) {
+        if ($quote->getCouponCode() === '' || $quote->getCouponCode() === null) {
             return null;
         }
 
         $couponCode = $this->giftyHelper->sanitizeCouponInput($quote->getCouponCode());
 
-        if(strlen($couponCode) !== GiftCardHelper::GIFT_CARD_STRING_LENGTH) {
+        if(!$this->giftCardHelper->isValidGiftCardFormat($couponCode)) {
             return null;
         }
 
@@ -116,7 +116,7 @@ class GiftCardRedeem
 
         try {
             $this->giftyHelper->logger->debug('beforeSubmit API redeem gift card');
-            $this->redeemTransaction = $this->giftCardHelper->client->giftCards->redeem($this->giftCardCode, [
+            $this->redeemTransaction = $this->giftCardHelper->getClient()->giftCards->redeem($this->giftCardCode, [
                 'amount' => $giftCardDiscount,
                 'currency' => 'EUR',
                 'capture' => false

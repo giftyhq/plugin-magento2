@@ -7,7 +7,9 @@
 				<resource id="Magento_Backend::stores">
 					<resource id="Magento_Backend::stores_settings">
 						<resource id="Magento_Config::config">
-							<resource id="Gifty_GiftCard::settings" title="Gifty Settings" translate="title" />
+							<resource id="Gifty_GiftCard::settings" title="Gifty Settings" sortOrder="50" translate="title">
+								<resource id="Gifty_GiftCard::config_gifty" title="Gift Card Configuration" translate="title" />
+							</resource>
 						</resource>
 					</resource>
 				</resource>

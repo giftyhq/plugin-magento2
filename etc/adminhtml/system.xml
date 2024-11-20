@@ -13,16 +13,28 @@
 			<group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0"
 				   showInStore="1">
 				<label>General Configuration</label>
-				<field id="api_key" translate="Gifty API Key" type="text" sortOrder="1" showInDefault="1"
+				<field id="api_key" translate="label comment" type="text" sortOrder="1" showInDefault="1"
 					   showInWebsite="0"
-					   showInStore="1">
+					   showInStore="0">
 					<label>API Key</label>
-					<comment>Enter your API Key. You can manage API-keys in your Gifty dashboard under the Developer
-						options.
-					</comment>
+					<comment>Enter your API Key. You can manage API-keys in your Gifty dashboard under the Developer options.</comment>
 					<validate>required-entry validate-no-html-tags no-whitespace</validate>
 					<backend_model>Gifty\Magento\Model\Config\Backend\ApiKey</backend_model>
+					<config_path>gifty/general/api_key</config_path>
 				</field>
+				<field id="apply_to_shipping" translate="label" type="select" sortOrder="2" showInDefault="1" showInWebsite="0" showInStore="1">
+					<label>Apply to Shipping</label>
+					<comment>Should gift cards be applied to shipping costs?</comment>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+					<config_path>gifty/general/apply_to_shipping</config_path>
+				</field>
+                <field id="gift_card_pattern" translate="label comment" type="text" sortOrder="3" showInDefault="1" showInWebsite="0" showInStore="1">
+                    <label>Gift Card Pattern</label>
+                    <comment>Custom regex pattern for gift card validation. Leave empty to use default pattern: /^[2456789ACDEFGHJKMNPQRSTUVWXYZ]{16}$/</comment>
+                    <validate>validate-no-html-tags</validate>
+                    <config_path>gifty/general/gift_card_pattern</config_path>
+                    <backend_model>Gifty\Magento\Model\Config\Backend\Pattern</backend_model>
+                </field>
 			</group>
 		</section>
 	</system>

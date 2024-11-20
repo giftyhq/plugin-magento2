@@ -29,14 +29,13 @@ class RuleModelLoad
     {
         if ($result->getCouponCode() === null &&
             $field === null &&
-            $ruleId !== null &&
-            strlen($ruleId) >= GiftCardHelper::GIFT_CARD_STRING_LENGTH
+            $ruleId !== null
         ) {
             $this->giftyHelper->logger->debug('RuleModelLoad afterLoad');
 
             $code = $this->giftyHelper->sanitizeCouponInput($ruleId);
 
-            if (strlen($code) !== GiftCardHelper::GIFT_CARD_STRING_LENGTH) {
+            if(!$this->giftCardHelper->isValidGiftCardFormat($code)) {
                 return $result;
             }
 
