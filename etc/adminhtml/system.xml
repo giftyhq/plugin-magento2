@@ -30,7 +30,7 @@
 				</field>
                 <field id="gift_card_pattern" translate="label comment" type="text" sortOrder="3" showInDefault="1" showInWebsite="0" showInStore="1">
                     <label>Gift Card Pattern</label>
-                    <comment>Custom regex pattern for gift card validation. Leave empty to use default pattern: /^[245679ACDEFGHJKMNPQRSTUVWXYZ]{16}$/</comment>
+                    <comment>Custom regex pattern for gift card validation. Leave empty to use default pattern: /^[2456789ACDEFGHJKMNPQRSTUVWXYZ]{16}$/</comment>
                     <validate>validate-no-html-tags</validate>
                     <config_path>gifty/general/gift_card_pattern</config_path>
                     <backend_model>Gifty\Magento\Model\Config\Backend\Pattern</backend_model>

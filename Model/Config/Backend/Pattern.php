@@ -18,7 +18,7 @@ class Pattern extends Value
     {
         $value = $this->getValue();
 
-        if (empty($value)) {
+        if (empty($value) === true) {
             return parent::beforeSave();
         }
 
