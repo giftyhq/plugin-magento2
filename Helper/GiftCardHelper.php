@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Gifty\Magento\Helper;
 
 use Gifty\Client\Exceptions\ApiException;
 use Gifty\Client\GiftyClient;
 use Gifty\Client\Resources\GiftCard;
 use Gifty\Magento\Logger\GiftyLogger;
-use Magento\Framework\App\Config\ScopeConfigInterface;
+use Gifty\Magento\Model\Config;
 use Magento\SalesRule\Model\Rule;
 use Magento\SalesRule\Model\RuleFactory;
 
@@ -16,16 +18,19 @@ class GiftCardHelper
     private RuleFactory $ruleFactory;
     private GiftyLogger $logger;
     private Config      $config;
+    private SessionCache $sessionCache;
     private array       $salesRules = [];
 
     public function __construct(
         RuleFactory $ruleFactory,
         Config $config,
-        GiftyLogger $giftyLogger
+        GiftyLogger $giftyLogger,
+        SessionCache $sessionCache
     ) {
         $this->ruleFactory  = $ruleFactory;
         $this->config       = $config;
         $this->logger       = $giftyLogger;
+        $this->sessionCache = $sessionCache;
         $this->client       = new GiftyClient($this->config->getApiKey());
     }
 
@@ -38,23 +43,25 @@ class GiftCardHelper
      */
     public function getGiftCard(string $code): ?GiftCard
     {
-        $this->logger->debug('GiftCardHelper getGiftCard: ' . $code);
+        $cachedGiftCard = $this->sessionCache->getCachedGiftCard($code);
+        if ($cachedGiftCard !== null) {
+            $this->logger->debug('GiftCardHelper getGiftCard: ' . $code . ' (cached)');
 
-        if (property_exists((object) $this->giftCards, $code) === false) {
-            $this->logger->debug('Fetching Gift Card from API: ' . $code);
-
-            try {
-                $this->giftCards[$code] = $this->client->giftCards->get($code);
-
-                $this->logger->debug('Found Gift Card with balance of: ' . $this->giftCards[$code]->getBalance());
-            } catch (ApiException $e) {
-                $this->giftCards[$code] = null;
-
-                $this->logger->debug('Could not find Gift Card');
-            }
+            return $cachedGiftCard;
         }
 
-        return $this->giftCards[$code];
+        try {
+            $giftCard = $this->client->giftCards->get($code);
+            $this->sessionCache->cacheGiftCard($code, $giftCard);
+            $this->logger->debug('GiftCardHelper getGiftCard: ' . $code . ' (API)');
+
+            return $giftCard;
+        } catch (ApiException $e) {
+            $this->sessionCache->cacheGiftCard($code, null);
+            $this->logger->error('GiftCardHelper getGiftCard: ' . $code . ' (API error)', ['error' => $e->getMessage()]);
+
+            return null;
+        }
     }
 
     /**
