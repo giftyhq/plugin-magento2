@@ -10,55 +10,57 @@ use Gifty\Magento\Helper\GiftCardHelper;
 use Gifty\Magento\Helper\GiftyHelper;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\Quote;
-use Magento\Quote\Model\Quote\TotalsCollector;
 use Magento\Quote\Model\QuoteManagement;
 use Magento\Quote\Model\QuoteRepository;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\OrderRepository;
 
+/**
+ * Handle gift card redemption during order placement
+ */
 class GiftCardRedeem
 {
     /**
      * @var QuoteRepository
      */
-    private $quoteRepository;
+    private QuoteRepository $quoteRepository;
     /**
      * @var OrderRepository
      */
-    private $orderRepository;
+    private OrderRepository $orderRepository;
     /**
      * @var GiftyHelper
      */
-    private $giftyHelper;
-    /**
-     * @var TotalsCollector
-     */
-    private $totalsCollector;
+    private GiftyHelper $giftyHelper;
     /**
      * @var string
      */
-    private $giftCardCode;
+    private string $giftCardCode;
     /**
      * @var Transaction
      */
-    private $redeemTransaction;
+    private Transaction $redeemTransaction;
     /**
      * @var GiftCardHelper
      */
-    private $giftCardHelper;
+    private GiftCardHelper $giftCardHelper;
 
+    /**
+     * @param QuoteRepository $quoteRepository
+     * @param OrderRepository $orderRepository
+     * @param GiftyHelper $giftyHelper
+     * @param GiftCardHelper $giftCardHelper
+     */
     public function __construct(
         QuoteRepository $quoteRepository,
         OrderRepository $orderRepository,
-        TotalsCollector $totalsCollector,
         GiftyHelper $giftyHelper,
         GiftCardHelper $giftCardHelper
     ) {
         $this->quoteRepository = $quoteRepository;
         $this->orderRepository = $orderRepository;
-        $this->totalsCollector = $totalsCollector;
-        $this->giftyHelper = $giftyHelper;
-        $this->giftCardHelper = $giftCardHelper;
+        $this->giftyHelper     = $giftyHelper;
+        $this->giftCardHelper  = $giftCardHelper;
     }
 
     /**
@@ -71,7 +73,7 @@ class GiftCardRedeem
      * @param Quote $quote
      * @param array $orderData
      *
-     * @return array
+     * @return array|null
      * @throws NoSuchEntityException
      */
     public function beforeSubmit(QuoteManagement $subject, Quote $quote, array $orderData = []): ?array
@@ -82,12 +84,12 @@ class GiftCardRedeem
 
         $couponCode = $this->giftyHelper->sanitizeCouponInput($quote->getCouponCode());
 
-        if(!$this->giftCardHelper->isValidGiftCardFormat($couponCode)) {
+        if (!$this->giftCardHelper->isValidGiftCardFormat($couponCode)) {
             return null;
         }
 
         $this->giftCardCode = $couponCode;
-        $giftCard = $this->giftCardHelper->getGiftCard($this->giftCardCode);
+        $giftCard           = $this->giftCardHelper->getGiftCard($this->giftCardCode);
 
         // Not a Gifty gift card
         if ($giftCard === null) {
@@ -104,8 +106,8 @@ class GiftCardRedeem
         $calculationQuote->collectTotals();
 
         $totalWithoutGiftCard = $calculationQuote->getGrandTotal() * 100;
-        $totalWithGiftCard = $quote->getGrandTotal() * 100;
-        $giftCardDiscount = $totalWithoutGiftCard - $totalWithGiftCard;
+        $totalWithGiftCard    = $quote->getGrandTotal() * 100;
+        $giftCardDiscount     = $totalWithoutGiftCard - $totalWithGiftCard;
 
         $quote->setTotalsCollectedFlag(false);
         $quote->collectTotals();
@@ -117,11 +119,11 @@ class GiftCardRedeem
         try {
             $this->giftyHelper->logger->debug('beforeSubmit API redeem gift card');
             $this->redeemTransaction = $this->giftCardHelper->getClient()->giftCards->redeem($this->giftCardCode, [
-                'amount' => $giftCardDiscount,
+                'amount'   => $giftCardDiscount,
                 'currency' => 'EUR',
-                'capture' => false
+                'capture'  => false
             ]);
-        } catch (MissingParameterException | ApiException $e) {
+        } catch (MissingParameterException|ApiException $e) {
             throw new NoSuchEntityException(__(
                 "The coupon code isn't valid. Verify the code and try again. %1",
                 $e->getMessage()
@@ -137,6 +139,16 @@ class GiftCardRedeem
         return [$quote, $orderData];
     }
 
+    /**
+     * Records the gift card redemption in order history
+     *
+     * @param QuoteManagement $subject
+     * @param OrderInterface|null $order
+     * @return OrderInterface|null
+     * @throws NoSuchEntityException
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @throws \Magento\Framework\Exception\InputException
+     */
     public function afterSubmit(QuoteManagement $subject, ?OrderInterface $order): ?OrderInterface
     {
         if ($order === null || $this->redeemTransaction === null) {

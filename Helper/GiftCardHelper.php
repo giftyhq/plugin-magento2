@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Gifty\Magento\Helper;
 
+use Exception;
 use Gifty\Client\Exceptions\ApiException;
 use Gifty\Client\GiftyClient;
 use Gifty\Client\Resources\GiftCard;
@@ -12,15 +13,68 @@ use Gifty\Magento\Model\Config;
 use Magento\SalesRule\Model\Rule;
 use Magento\SalesRule\Model\RuleFactory;
 
+/**
+ * Helper class for Gifty gift card operations
+ *
+ * Handles gift card validation, retrieval, and sales rule creation for the Gifty
+ * gift card integration. Implements caching to prevent redundant API calls and
+ * manages the conversion of gift cards to Magento sales rules.
+ *
+ */
 class GiftCardHelper
 {
+    /**
+     * Gifty API client instance
+     *
+     * @var GiftyClient
+     */
     private GiftyClient $client;
-    private RuleFactory $ruleFactory;
-    private GiftyLogger $logger;
-    private Config      $config;
-    private SessionCache $sessionCache;
-    private array       $salesRules = [];
 
+    /**
+     * Magento sales rule factory
+     *
+     * @var RuleFactory
+     */
+    private RuleFactory $ruleFactory;
+
+    /**
+     * Gifty logger instance
+     *
+     * @var GiftyLogger
+     */
+    private GiftyLogger $logger;
+
+    /**
+     * Gifty configuration model
+     *
+     * @var Config
+     */
+    private Config $config;
+
+    /**
+     * Session cache handler
+     *
+     * @var SessionCache
+     */
+    private SessionCache $sessionCache;
+
+    /**
+     * Cache of created sales rules indexed by gift card code
+     *
+     * @var array<string, Rule>
+     */
+    private array $salesRules = [];
+
+    /**
+     * Constructor
+     *
+     * Initializes helper with required dependencies and creates Gifty API client instance
+     *
+     * @param RuleFactory $ruleFactory Factory for creating sales rules
+     * @param Config $config Gifty configuration model
+     * @param GiftyLogger $giftyLogger Logger for Gifty operations
+     * @param SessionCache $sessionCache Cache handler for gift card data
+     */
     public function __construct(
         RuleFactory $ruleFactory,
         Config $config,
@@ -35,11 +89,14 @@ class GiftCardHelper
     }
 
     /**
-     * To prevent multiple API requests in a single page request,
-     * we store retrieved Gift Cards in this array.
+     * Retrieves a gift card by its code
      *
-     * @param string $code
-     * @return GiftCard|null
+     * First checks the session cache for the gift card to prevent unnecessary API calls.
+     * If not found in cache, makes an API request and caches the result.
+     * Failed API requests are also cached to prevent repeated failures.
+     *
+     * @param string $code Gift card code to retrieve
+     * @return GiftCard|null The gift card if found and valid, null otherwise
      */
     public function getGiftCard(string $code): ?GiftCard
     {
@@ -58,14 +115,23 @@ class GiftCardHelper
             return $giftCard;
         } catch (ApiException $e) {
             $this->sessionCache->cacheGiftCard($code, null);
-            $this->logger->error('GiftCardHelper getGiftCard: ' . $code . ' (API error)', ['error' => $e->getMessage()]);
+            $this->logger->error('GiftCardHelper getGiftCard: ' . $code . ' (API error)', [
+                'error' => $e->getMessage()
+            ]);
 
             return null;
         }
     }
 
     /**
-     * Get or create sales rule for gift card
+     * Gets or creates a sales rule for a gift card
+     *
+     * Returns an existing sales rule if one exists for the given code,
+     * otherwise creates a new one and caches it.
+     *
+     * @param GiftCard $giftCard Gift card to create rule for
+     * @param string $code Gift card code
+     * @return Rule Sales rule for applying the gift card discount
      */
     public function getSalesRule(GiftCard $giftCard, string $code): Rule
     {
@@ -77,6 +143,16 @@ class GiftCardHelper
         return $this->salesRules[$code];
     }
 
+    /**
+     * Creates a new sales rule for a gift card
+     *
+     * Configures a Magento sales rule to apply the gift card balance as a discount.
+     * The rule is set up as a cart-fixed discount that can optionally apply to shipping.
+     *
+     * @param GiftCard $giftCard Gift card to create rule for
+     * @param string $code Gift card code
+     * @return Rule Configured sales rule
+     */
     private function createSalesRule(GiftCard $giftCard, string $code): Rule
     {
         $discount = $giftCard->getBalance() / 100;
@@ -98,23 +174,32 @@ class GiftCardHelper
     }
 
     /**
-     * Validate gift card code format
+     * Validates a gift card code format
      *
-     * @param string $code
-     * @return bool
+     * Checks if a given code matches the configured gift card pattern.
+     * Handles potential regex errors gracefully.
+     *
+     * @param string $code Code to validate
+     * @return bool True if the code format is valid, false otherwise
      */
     public function isValidGiftCardFormat(string $code): bool
     {
         $pattern = $this->config->getGiftCardPattern();
-        $result  = @preg_match($pattern, $code);
-
-        return $result === 1;
+        try {
+            $result = preg_match($pattern, $code);
+            if ($result === false) {
+                return false;
+            }
+            return $result === 1;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
-     * Get client instance
+     * Gets the Gifty API client instance
      *
-     * @return GiftyClient
+     * @return GiftyClient The configured API client
      */
     public function getClient(): GiftyClient
     {
