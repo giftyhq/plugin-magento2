@@ -2,12 +2,12 @@
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
 	<table name="quote" resource="default" engine="innodb">
-		<column xsi:type="text" name="gifty_gift_card_code" nullable="true" comment="Gifty Gift Card Code"/>
+		<column xsi:type="varchar" name="gifty_gift_card_code" nullable="true" length="255" comment="Gifty Gift Card Code"/>
 		<column xsi:type="int" name="gifty_gift_card_discount" nullable="false" default="0" unsigned="true" comment="Gifty Gift Card Discount"/>
 		<column xsi:type="text" name="gifty_transaction_id_redeem" nullable="true" comment="Gifty Redeem Transaction ID"/>
 	</table>
 	<table name="sales_order" resource="default" engine="innodb">
-		<column xsi:type="text" name="gifty_gift_card_code" nullable="true" comment="Gifty Gift Card Code"/>
+		<column xsi:type="varchar" name="gifty_gift_card_code" nullable="true" length="255" comment="Gifty Gift Card Code"/>
 		<column xsi:type="int" name="gifty_gift_card_discount" nullable="false" default="0" unsigned="true" comment="Gifty Gift Card Discount"/>
 		<column xsi:type="text" name="gifty_transaction_id_redeem" nullable="true" comment="Gifty Redeem Transaction ID"/>
 		<column xsi:type="text" name="gifty_transaction_id_capture" nullable="true" comment="Gifty Capture Transaction ID"/>

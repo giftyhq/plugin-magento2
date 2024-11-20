@@ -12,38 +12,21 @@ use Magento\SalesRule\Model\RuleFactory;
 
 class GiftCardHelper
 {
-    const GIFT_CARD_STRING_LENGTH = 16;
-
-    /**
-     * @var GiftyClient
-     */
-    public $client;
-
-    /**
-     * @var RuleFactory
-     */
-    private $ruleFactory;
-    /**
-     * @var GiftyLogger
-     */
-    private $logger;
-    /**
-     * @var array
-     */
-    private $giftCards = [];
-    /**
-     * @var array
-     */
-    private $salesRules = [];
+    private GiftyClient $client;
+    private RuleFactory $ruleFactory;
+    private GiftyLogger $logger;
+    private Config      $config;
+    private array       $salesRules = [];
 
     public function __construct(
         RuleFactory $ruleFactory,
-        ScopeConfigInterface $scopeConfig,
+        Config $config,
         GiftyLogger $giftyLogger
     ) {
-        $this->ruleFactory = $ruleFactory;
-        $this->logger = $giftyLogger;
-        $this->client = new GiftyClient((string) $scopeConfig->getValue('gifty/general/api_key'));
+        $this->ruleFactory  = $ruleFactory;
+        $this->config       = $config;
+        $this->logger       = $giftyLogger;
+        $this->client       = new GiftyClient($this->config->getApiKey());
     }
 
     /**
@@ -74,27 +57,60 @@ class GiftCardHelper
         return $this->giftCards[$code];
     }
 
+    /**
+     * Get or create sales rule for gift card
+     */
     public function getSalesRule(GiftCard $giftCard, string $code): Rule
     {
-        if (isset($this->salesRules[$code]) === false) {
-            $discount = $giftCard->getBalance() / 100;
-            $rule = $this->ruleFactory->create();
-
-            $this->salesRules[$code] = $rule
-                ->setName(__('Gifty Gift Card'))
-                ->setDescription(__('Gift Card %1', $code))
-                ->setCouponCode($code)
-                ->setCouponType(Rule::COUPON_TYPE_SPECIFIC)
-                ->setStopRulesProcessing(0)
-                ->setIsAdvanced(1)
-                ->setSortOrder(1)
-                ->setSimpleAction(Rule::CART_FIXED_ACTION)
-                ->setDiscountAmount($discount)
-                ->setApplyToShipping(0)
-                ->setIsRss(0)
-                ->setIsActive(1);
+        if (isset($this->salesRules[$code])) {
+            return $this->salesRules[$code];
         }
 
+        $this->salesRules[$code] = $this->createSalesRule($giftCard, $code);
         return $this->salesRules[$code];
+    }
+
+    private function createSalesRule(GiftCard $giftCard, string $code): Rule
+    {
+        $discount = $giftCard->getBalance() / 100;
+
+        return $this->ruleFactory
+            ->create()
+            ->setName(__('Gifty Gift Card'))
+            ->setDescription(__('Gift Card %1', $code))
+            ->setCouponCode($code)
+            ->setCouponType(Rule::COUPON_TYPE_SPECIFIC)
+            ->setStopRulesProcessing(0)
+            ->setIsAdvanced(1)
+            ->setSortOrder(1)
+            ->setSimpleAction(Rule::CART_FIXED_ACTION)
+            ->setDiscountAmount($discount)
+            ->setApplyToShipping((int)$this->config->isApplyToShippingEnabled())
+            ->setIsRss(0)
+            ->setIsActive(1);
+    }
+
+    /**
+     * Validate gift card code format
+     *
+     * @param string $code
+     * @return bool
+     */
+    public function isValidGiftCardFormat(string $code): bool
+    {
+        $pattern = $this->config->getGiftCardPattern();
+        $result  = @preg_match($pattern, $code);
+
+        return $result === 1;
+    }
+
+    /**
+     * Get client instance
+     *
+     * @return GiftyClient
+     */
+    public function getClient(): GiftyClient
+    {
+        return $this->client;
     }
 }
