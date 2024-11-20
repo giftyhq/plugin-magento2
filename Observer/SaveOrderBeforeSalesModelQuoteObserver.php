@@ -8,19 +8,30 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Sales\Model\Order;
 
+/**
+ * Copies gift card data from quote to order before order creation
+ */
 class SaveOrderBeforeSalesModelQuoteObserver implements ObserverInterface
 {
     /**
      * @var Copy
      */
-    private $objectCopyService;
+    private Copy $objectCopyService;
 
+    /**
+     * @param Copy $objectCopyService
+     */
     public function __construct(Copy $objectCopyService)
     {
         $this->objectCopyService = $objectCopyService;
     }
 
-    public function execute(Observer $observer)
+    /**
+     * Transfers gift card data from quote to order using fieldset mappings
+     *
+     * @param Observer $observer
+     */
+    public function execute(Observer $observer): void
     {
         /* @var Order $order */
         $order = $observer->getEvent()->getData('order');

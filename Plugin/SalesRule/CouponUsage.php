@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Gifty\Magento\Plugin\SalesRule;
 
@@ -7,17 +8,24 @@ use Gifty\Magento\Helper\GiftCardHelper;
 use Gifty\Magento\Helper\GiftyHelper;
 use Magento\SalesRule\Model\ResourceModel\Coupon\Usage;
 
+/**
+ * Plugin to prevent saving usage statistics for virtual gift card coupons
+ */
 class CouponUsage
 {
     /**
      * @var GiftyHelper
      */
-    private $giftyHelper;
+    private GiftyHelper $giftyHelper;
     /**
      * @var GiftCardHelper
      */
-    private $giftCardHelper;
+    private GiftCardHelper $giftCardHelper;
 
+    /**
+     * @param GiftyHelper $giftyHelper
+     * @param GiftCardHelper $giftCardHelper
+     */
     public function __construct(
         GiftyHelper $giftyHelper,
         GiftCardHelper $giftCardHelper
@@ -29,12 +37,11 @@ class CouponUsage
     /**
      * The Gift Card sales rule is virtual, so saving coupon usage is not possible. We prevent this right here.
      *
-     * @param Usage $instance
-     * @param       $customerId
-     * @param       $couponId
-     * @param bool $increment
-     *
-     * @return array
+     * @param Usage $instance Usage instance
+     * @param mixed $customerId Customer ID
+     * @param mixed $couponId Coupon ID
+     * @param mixed $increment Whether to increment usage
+     * @return array|null Modified parameters or null to skip
      */
     public function beforeUpdateCustomerCouponTimesUsed(
         Usage $instance,
@@ -50,7 +57,7 @@ class CouponUsage
 
         $code = $this->giftyHelper->sanitizeCouponInput($couponId);
 
-        if(!$this->giftCardHelper->isValidGiftCardFormat($code)) {
+        if (!$this->giftCardHelper->isValidGiftCardFormat($code)) {
             return null;
         }
 

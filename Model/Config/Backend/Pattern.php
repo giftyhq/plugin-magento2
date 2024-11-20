@@ -4,15 +4,25 @@ declare(strict_types=1);
 
 namespace Gifty\Magento\Model\Config\Backend;
 
+use Exception;
 use Magento\Framework\App\Config\Value;
 use Magento\Framework\Exception\ValidatorException;
 
+/**
+ * Backend model for gift card pattern configuration validation
+ */
 class Pattern extends Value
 {
-
     /**
+     * Validates the gift card pattern before saving
+     *
+     * Checks if:
+     * - The pattern is a valid regex
+     * - The pattern accepts known valid gift card formats
+     * - Empty values are allowed (uses default pattern)
+     *
      * @return Pattern
-     * @throws ValidatorException
+     * @throws ValidatorException If pattern is invalid or too restrictive
      */
     public function beforeSave(): Pattern
     {
@@ -23,7 +33,7 @@ class Pattern extends Value
         }
 
         try {
-            if (@preg_match($value, '') === false) {
+            if (preg_match($value, '') === false) {
                 throw new ValidatorException(__('Invalid regular expression pattern'));
             }
 
@@ -31,14 +41,19 @@ class Pattern extends Value
             $testCodes = ['ACDE2456FGHJ679K', 'AAAACCCCDDDDEEEE'];
 
             foreach ($testCodes as $testCode) {
-                if (@preg_match($value, $testCode) !== 1) {
+                $result = preg_match($value, $testCode);
+
+                if ($result === false) {
+                    throw new ValidatorException(__('Invalid regular expression pattern'));
+                }
+                if ($result !== 1) {
                     throw new ValidatorException(
                         __('The pattern %1 is too restrictive. It would not accept valid gift card codes.', $value)
                     );
                 }
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new ValidatorException(
                 __('Invalid regular expression pattern: %1', $e->getMessage())
             );

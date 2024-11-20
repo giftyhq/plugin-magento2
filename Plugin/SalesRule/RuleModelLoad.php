@@ -11,12 +11,16 @@ class RuleModelLoad
     /**
      * @var GiftyHelper
      */
-    private $giftyHelper;
+    private GiftyHelper $giftyHelper;
     /**
      * @var GiftCardHelper
      */
-    private $giftCardHelper;
+    private GiftCardHelper $giftCardHelper;
 
+    /**
+     * @param GiftyHelper $giftyHelper
+     * @param GiftCardHelper $giftCardHelper
+     */
     public function __construct(
         GiftyHelper $giftyHelper,
         GiftCardHelper $giftCardHelper
@@ -25,6 +29,15 @@ class RuleModelLoad
         $this->giftCardHelper = $giftCardHelper;
     }
 
+    /**
+     * After rule load plugin that checks if a non-existent rule could be a Gifty gift card
+     *
+     * @param Rule $rule Original rule model
+     * @param Rule $result Result from load
+     * @param mixed $ruleId Rule ID being loaded
+     * @param string|null $field Field to load by
+     * @return Rule
+     */
     public function afterLoad(Rule $rule, Rule $result, $ruleId, $field = null): Rule
     {
         if ($result->getCouponCode() === null &&
@@ -35,16 +48,14 @@ class RuleModelLoad
 
             $code = $this->giftyHelper->sanitizeCouponInput($ruleId);
 
-            if(!$this->giftCardHelper->isValidGiftCardFormat($code)) {
+            if (!$this->giftCardHelper->isValidGiftCardFormat($code)) {
                 return $result;
             }
 
             $giftCard = $this->giftCardHelper->getGiftCard($code);
 
             if ($giftCard !== null && $giftCard->isRedeemable()) {
-                $rule = $this->giftCardHelper->getSalesRule($giftCard, $code);
-
-                return $rule;
+                return $this->giftCardHelper->getSalesRule($giftCard, $code);
             }
         }
 

@@ -7,14 +7,40 @@ namespace Gifty\Magento\Model;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 
+/**
+ * Configuration model for Gifty gift cards
+ */
 class Config
 {
-    public const XML_PATH_API_KEY           = 'gifty/general/api_key';
+    /**
+     * Configuration path for the Gifty API key
+     *
+     * @var string
+     */
+    public const XML_PATH_API_KEY = 'gifty/general/api_key';
+
+    /**
+     * Configuration path for applying gift cards to shipping
+     *
+     * @var string
+     */
     public const XML_PATH_APPLY_TO_SHIPPING = 'gifty/general/apply_to_shipping';
+
+    /**
+     * Configuration path for the gift card validation pattern
+     *
+     * @var string
+     */
     public const XML_PATH_GIFT_CARD_PATTERN = 'gifty/general/gift_card_pattern';
 
+    /**
+     * @var ScopeConfigInterface
+     */
     private ScopeConfigInterface $scopeConfig;
 
+    /**
+     * @param ScopeConfigInterface $scopeConfig
+     */
     public function __construct(
         ScopeConfigInterface $scopeConfig
     ) {
@@ -22,7 +48,7 @@ class Config
     }
 
     /**
-     * Get API Key
+     * Get the Gifty API key from configuration
      *
      * @param int|null $storeId
      * @return string
@@ -35,7 +61,7 @@ class Config
     }
 
     /**
-     * Check if gift card should be applied to shipping
+     * Check if gift cards should be applied to shipping costs
      *
      * @param int|null $storeId
      * @return bool
@@ -50,7 +76,7 @@ class Config
     }
 
     /**
-     * Get gift card pattern
+     * Get the regex pattern for gift card validation
      *
      * @param int|null $storeId
      * @return string

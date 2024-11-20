@@ -7,39 +7,59 @@ use Gifty\Magento\Helper\GiftCardHelper;
 use Gifty\Magento\Helper\GiftyHelper;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Exception\AlreadyExistsException;
+use Magento\Framework\Exception\InputException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderRepository;
 
 /**
- * If order payment failed, or the order can not be completed for any other
- * reason we need to release the capture made on the gift card.
+ * Releases gift card transaction holds when order processing fails
  */
 class OrderFailureTransactionRelease implements ObserverInterface
 {
     /**
      * @var OrderRepository
      */
-    private $orderRepository;
+    private OrderRepository $orderRepository;
+
     /**
      * @var GiftyHelper
      */
-    private $giftyHelper;
+    private GiftyHelper $giftyHelper;
+
     /**
      * @var GiftCardHelper
      */
-    private $giftCardHelper;
+    private GiftCardHelper $giftCardHelper;
 
+    /**
+     * @param OrderRepository $orderRepository
+     * @param GiftyHelper $giftyHelper
+     * @param GiftCardHelper $giftCardHelper
+     */
     public function __construct(
         OrderRepository $orderRepository,
         GiftyHelper $giftyHelper,
         GiftCardHelper $giftCardHelper
     ) {
         $this->orderRepository = $orderRepository;
-        $this->giftyHelper = $giftyHelper;
-        $this->giftCardHelper = $giftCardHelper;
+        $this->giftyHelper     = $giftyHelper;
+        $this->giftCardHelper  = $giftCardHelper;
     }
 
-    public function execute(Observer $observer)
+    /**
+     * Releases held gift card amount when order fails
+     *
+     * Retrieves the gift card transaction and attempts to release the held amount.
+     * Logs the release attempt and updates order status history.
+     *
+     * @param Observer $observer
+     * @throws AlreadyExistsException
+     * @throws InputException
+     * @throws NoSuchEntityException
+     */
+    public function execute(Observer $observer): void
     {
         $this->giftyHelper->logger->debug('Order failure event: sales_model_service_quote_submit_failure');
 
@@ -51,11 +71,11 @@ class OrderFailureTransactionRelease implements ObserverInterface
         }
 
         $this->giftyHelper->logger->debug('Failed order has Gift Card transaction: ' .
-            $order->getGiftyTransactionIdRedeem());
+                                          $order->getGiftyTransactionIdRedeem());
 
         if ($order->getGiftyTransactionIdRelease() !== null) {
             $this->giftyHelper->logger->debug('Gift Card already released. Transaction ID: ' .
-                $order->getGiftyTransactionIdRelease());
+                                              $order->getGiftyTransactionIdRelease());
         }
 
         $giftCard = $this->giftCardHelper->getGiftCard($order->getGiftyGiftCardCode());

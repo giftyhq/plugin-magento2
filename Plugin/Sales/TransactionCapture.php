@@ -9,21 +9,29 @@ use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderRepository;
 use Magento\Sales\Model\ResourceModel\Order as ResourceModelOrder;
 
+/**
+ * Handle gift card transaction capture when order is completed
+ */
 class TransactionCapture
 {
     /**
      * @var OrderRepository
      */
-    private $orderRepository;
+    private OrderRepository $orderRepository;
     /**
      * @var GiftyHelper
      */
-    private $giftyHelper;
+    private GiftyHelper $giftyHelper;
     /**
      * @var GiftCardHelper
      */
-    private $giftCardHelper;
+    private GiftCardHelper $giftCardHelper;
 
+    /**
+     * @param OrderRepository $orderRepository
+     * @param GiftyHelper $giftyHelper
+     * @param GiftCardHelper $giftCardHelper
+     */
     public function __construct(
         OrderRepository $orderRepository,
         GiftyHelper $giftyHelper,
@@ -34,6 +42,20 @@ class TransactionCapture
         $this->giftCardHelper = $giftCardHelper;
     }
 
+    /**
+     * Captures gift card transaction when order is completed
+     *
+     * Attempts to capture the previously reserved gift card amount
+     * when the order reaches the complete state.
+     *
+     * @param ResourceModelOrder $subject
+     * @param $result
+     * @param Order $order
+     * @return mixed
+     * @throws \Magento\Framework\Exception\AlreadyExistsException
+     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function afterSave(ResourceModelOrder $subject, $result, Order $order)
     {
         if ($order->getState() !== Order::STATE_COMPLETE ||

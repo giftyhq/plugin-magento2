@@ -6,24 +6,35 @@ namespace Gifty\Magento\Plugin\Sales;
 use Gifty\Client\Exceptions\ApiException;
 use Gifty\Magento\Helper\GiftCardHelper;
 use Gifty\Magento\Helper\GiftyHelper;
+use Magento\Framework\Exception\AlreadyExistsException;
+use Magento\Framework\Exception\InputException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Model\OrderRepository;
 use Magento\Sales\Model\Service\OrderService;
 
+/**
+ * Handle gift card transaction release on order cancellation
+ */
 class TransactionRelease
 {
     /**
      * @var OrderRepository
      */
-    private $orderRepository;
+    private OrderRepository $orderRepository;
     /**
      * @var GiftyHelper
      */
-    private $giftyHelper;
+    private GiftyHelper $giftyHelper;
     /**
      * @var GiftCardHelper
      */
-    private $giftCardHelper;
+    private GiftCardHelper $giftCardHelper;
 
+    /**
+     * @param OrderRepository $orderRepository
+     * @param GiftyHelper $giftyHelper
+     * @param GiftCardHelper $giftCardHelper
+     */
     public function __construct(
         OrderRepository $orderRepository,
         GiftyHelper $giftyHelper,
@@ -34,7 +45,21 @@ class TransactionRelease
         $this->giftCardHelper = $giftCardHelper;
     }
 
-    public function afterCancel(OrderService $subject, bool $result, $orderId): bool
+    /**
+     * Releases gift card transaction when order is cancelled
+     *
+     * Attempts to release any held gift card amount when an order
+     * is cancelled, ensuring funds are returned to the gift card.
+     *
+     * @param OrderService $subject
+     * @param bool $result
+     * @param int $orderId
+     * @return bool
+     * @throws AlreadyExistsException
+     * @throws InputException
+     * @throws NoSuchEntityException
+     */
+    public function afterCancel(OrderService $subject, bool $result, int $orderId): bool
     {
         if (!$result) {
             return $result;

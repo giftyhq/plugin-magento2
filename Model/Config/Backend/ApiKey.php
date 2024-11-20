@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace Gifty\Magento\Model\Config\Backend;
 
+use Exception;
 use Gifty\Client\GiftyClient;
 use Magento\Framework\App\Config\Value;
 use Magento\Framework\Exception\ValidatorException;
 
+/**
+ * Backend model for validating the Gifty API key configuration
+ */
 class ApiKey extends Value
 {
-
     /**
-     * Validate and set value before saving
+     * Validates API key format and authenticity before saving
      *
      * @return ApiKey
      * @throws ValidatorException
@@ -29,11 +32,11 @@ class ApiKey extends Value
     }
 
     /**
-     * Validate value format
+     * Checks if API key value is non-empty and is a string
      *
      * @param mixed $value
      * @param string $label
-     * @throws ValidatorException
+     * @throws ValidatorException If value is empty or not a string
      */
     private function validateValue(mixed $value, string $label): void
     {
@@ -47,11 +50,11 @@ class ApiKey extends Value
     }
 
     /**
-     * Validate API key with Gifty service
+     * Tests API key validity by attempting to authenticate with Gifty service
      *
      * @param string $value
      * @param string $label
-     * @throws ValidatorException
+     * @throws ValidatorException If API key validation fails
      */
     private function validateApiKey(string $value, string $label): void
     {
@@ -61,7 +64,7 @@ class ApiKey extends Value
             if (!$giftyClient->validateApiKey()) {
                 throw new ValidatorException(__('%1 is not a valid API key.', $label));
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new ValidatorException(
                 __('Unable to validate %1: %2', $label, $e->getMessage())
             );
