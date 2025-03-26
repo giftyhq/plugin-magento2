@@ -5,6 +5,7 @@ namespace Gifty\Magento\Plugin\Sales;
 use Gifty\Client\Exceptions\ApiException;
 use Gifty\Magento\Helper\GiftCardHelper;
 use Gifty\Magento\Helper\GiftyHelper;
+use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\OrderRepository;
 use Magento\Sales\Model\ResourceModel\Order as ResourceModelOrder;
@@ -49,7 +50,7 @@ class TransactionCapture
      * when the order reaches the complete state.
      *
      * @param ResourceModelOrder $subject
-     * @param $result
+     * @param AbstractDb $result
      * @param Order $order
      * @return mixed
      * @throws \Magento\Framework\Exception\AlreadyExistsException

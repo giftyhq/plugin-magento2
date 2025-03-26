@@ -4,26 +4,26 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bd0b286382c267509caba372db756e9c",
+    "content-hash": "89da895936a7b466cf35f3ce2db96309",
     "packages": [
         {
             "name": "gifty/gifty-php",
-            "version": "V1.8.0",
+            "version": "V1.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giftyhq/gifty-php.git",
-                "reference": "aaf32455562d08faa891c6fbc6590e2ba3ff3456"
+                "reference": "69ffa7ac6600f201aae1ae4ab99322627840d7b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giftyhq/gifty-php/zipball/aaf32455562d08faa891c6fbc6590e2ba3ff3456",
-                "reference": "aaf32455562d08faa891c6fbc6590e2ba3ff3456",
+                "url": "https://api.github.com/repos/giftyhq/gifty-php/zipball/69ffa7ac6600f201aae1ae4ab99322627840d7b3",
+                "reference": "69ffa7ac6600f201aae1ae4ab99322627840d7b3",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "ext-json": "*",
-                "php": "~8.0.0||~8.1.0||~8.2.0||~8.3.0",
+                "php": "~8.0.0||~8.1.0||~8.2.0||~8.3.0||~8.4.0",
                 "psr/http-message": "^2.0"
             },
             "require-dev": {
@@ -57,9 +57,9 @@
             ],
             "support": {
                 "email": "info@gifty.nl",
-                "source": "https://github.com/giftyhq/gifty-php/tree/V1.8.0"
+                "source": "https://github.com/giftyhq/gifty-php/tree/V1.8.1"
             },
-            "time": "2024-05-01T12:34:40+00:00"
+            "time": "2024-11-29T13:31:12+00:00"
         },
         {
             "name": "psr/http-message",
@@ -122,7 +122,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "~8.1.0||~8.2.0||~8.3.0"
+        "php": "~8.1.0||~8.2.0||~8.3.0||~8.4.0"
     },
     "platform-dev": {},
     "plugin-api-version": "2.6.0"

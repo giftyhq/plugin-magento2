@@ -12,8 +12,6 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\QuoteManagement;
 use Magento\Quote\Model\QuoteRepository;
-use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Model\OrderRepository;
 
 /**
  * Handle gift card redemption during order placement
@@ -25,21 +23,9 @@ class GiftCardRedeem
      */
     private QuoteRepository $quoteRepository;
     /**
-     * @var OrderRepository
-     */
-    private OrderRepository $orderRepository;
-    /**
      * @var GiftyHelper
      */
     private GiftyHelper $giftyHelper;
-    /**
-     * @var string
-     */
-    private string $giftCardCode;
-    /**
-     * @var Transaction
-     */
-    private Transaction $redeemTransaction;
     /**
      * @var GiftCardHelper
      */
@@ -47,18 +33,15 @@ class GiftCardRedeem
 
     /**
      * @param QuoteRepository $quoteRepository
-     * @param OrderRepository $orderRepository
      * @param GiftyHelper $giftyHelper
      * @param GiftCardHelper $giftCardHelper
      */
     public function __construct(
         QuoteRepository $quoteRepository,
-        OrderRepository $orderRepository,
         GiftyHelper $giftyHelper,
         GiftCardHelper $giftCardHelper
     ) {
         $this->quoteRepository = $quoteRepository;
-        $this->orderRepository = $orderRepository;
         $this->giftyHelper     = $giftyHelper;
         $this->giftCardHelper  = $giftCardHelper;
     }
@@ -88,8 +71,7 @@ class GiftCardRedeem
             return null;
         }
 
-        $this->giftCardCode = $couponCode;
-        $giftCard           = $this->giftCardHelper->getGiftCard($this->giftCardCode);
+        $giftCard = $this->giftCardHelper->getGiftCard($couponCode);
 
         // Not a Gifty gift card
         if ($giftCard === null) {
@@ -118,7 +100,7 @@ class GiftCardRedeem
 
         try {
             $this->giftyHelper->logger->debug('beforeSubmit API redeem gift card');
-            $this->redeemTransaction = $this->giftCardHelper->getClient()->giftCards->redeem($this->giftCardCode, [
+            $redeemTransaction = $this->giftCardHelper->getClient()->giftCards->redeem($couponCode, [
                 'amount'   => $giftCardDiscount,
                 'currency' => 'EUR',
                 'capture'  => false
@@ -130,42 +112,12 @@ class GiftCardRedeem
             ));
         }
 
-        $quote->setGiftyGiftCardCode($this->giftCardCode);
-        $quote->setGiftyGiftCardDiscount(abs($this->redeemTransaction->getAmount()));
-        $quote->setGiftyTransactionIdRedeem($this->redeemTransaction->getId());
+        $quote->setGiftyGiftCardCode($couponCode);
+        $quote->setGiftyGiftCardDiscount(abs($redeemTransaction->getAmount()));
+        $quote->setGiftyTransactionIdRedeem($redeemTransaction->getId());
 
         $this->quoteRepository->save($quote);
 
         return [$quote, $orderData];
-    }
-
-    /**
-     * Records the gift card redemption in order history
-     *
-     * @param QuoteManagement $subject
-     * @param OrderInterface|null $order
-     * @return OrderInterface|null
-     * @throws NoSuchEntityException
-     * @throws \Magento\Framework\Exception\AlreadyExistsException
-     * @throws \Magento\Framework\Exception\InputException
-     */
-    public function afterSubmit(QuoteManagement $subject, ?OrderInterface $order): ?OrderInterface
-    {
-        if ($order === null || $this->redeemTransaction === null) {
-            return $order;
-        }
-
-        $this->giftyHelper->logger->debug('afterSubmit');
-
-        $order->addCommentToStatusHistory(__(
-            "Reserved amount of %1 on Gift Card \"%2\". Transaction ID: \"%3\"",
-            $this->giftyHelper->centsToCurrencyString(abs($this->redeemTransaction->getAmount())),
-            $this->giftCardCode,
-            $this->redeemTransaction->getId()
-        ));
-
-        $this->orderRepository->save($order);
-
-        return $order;
     }
 }
