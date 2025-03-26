@@ -47,10 +47,10 @@ class RuleCollection
      * Because the coupon code is not available at that moment, we will apply it to this class here.
      *
      * @param Collection $collection
-     * @param $websiteId
-     * @param $customerGroupId
-     * @param $couponCode
-     * @param $now
+     * @param int $websiteId
+     * @param int $customerGroupId
+     * @param string $couponCode
+     * @param null|string $now
      * @param Address|null $address
      *
      * @return null

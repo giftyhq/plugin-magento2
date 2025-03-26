@@ -2,6 +2,7 @@
 
 namespace Gifty\Magento\Helper;
 
+use Gifty\Magento\Logger\GiftyLogger;
 use Magento\Framework\Session\SessionManagerInterface;
 use Gifty\Client\Resources\GiftCard;
 
@@ -37,13 +38,23 @@ class SessionCache
     private SessionManagerInterface $session;
 
     /**
+     * Logger instance for Gifty operations
+     * @var GiftyLogger
+     */
+    private GiftyLogger $logger;
+
+    /**
      * Constructor
      *
      * @param SessionManagerInterface $session The Magento session manager
+     * @param GiftyLogger $logger The Gifty logger instance
      */
-    public function __construct(SessionManagerInterface $session)
-    {
+    public function __construct(
+        SessionManagerInterface $session,
+        GiftyLogger $logger
+    ) {
         $this->session = $session;
+        $this->logger = $logger;
     }
 
     /**
@@ -59,8 +70,12 @@ class SessionCache
         $cache = $this->session->getData(self::CACHE_KEY) ?? [];
 
         if (!isset($cache[$code]) || $cache[$code]['expires'] <= time()) {
+            $this->logger->debug('Gift card not found in cache or expired', ['code' => $code]);
+
             return null;
         }
+
+        $this->logger->debug('Gift card found in cache', ['code' => $code]);
 
         return $cache[$code]['giftCard'];
     }
