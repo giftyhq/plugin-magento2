@@ -21,14 +21,14 @@ class SessionCache
      *
      * @var string
      */
-    private const CACHE_KEY = 'gifty_gift_card_cache';
+    private const string CACHE_KEY = 'gifty_gift_card_cache';
 
     /**
      * Cache lifetime in seconds (5 minutes)
      *
      * @var int
      */
-    private const CACHE_LIFETIME = 300;
+    private const int CACHE_LIFETIME = 300;
 
     /**
      * Magento session manager instance
