@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<ruleset name="Gifty Magento 2 Module">
+    <description>Magento 2 coding standard for the Gifty module.</description>
+
+    <rule ref="Magento2"/>
+
+    <file>.</file>
+
+    <exclude-pattern>vendor/*</exclude-pattern>
+</ruleset>
