@@ -1,0 +1,11 @@
+parameters:
+    level: 1
+    paths:
+        - .
+    excludePaths:
+        - vendor
+    ignoreErrors:
+        # GiftyLogger intentionally extends Monolog\Logger which is marked @final
+        - '#Class Gifty\\Magento\\Logger\\GiftyLogger extends @final class Monolog\\Logger#'
+    bootstrapFiles:
+        - vendor/bitexpert/phpstan-magento/autoload.php

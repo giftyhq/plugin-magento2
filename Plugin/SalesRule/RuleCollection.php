@@ -61,7 +61,7 @@ class RuleCollection
         $customerGroupId,
         $couponCode = '',
         $now = null,
-        Address $address = null
+        ?Address $address = null
     ) {
         if ($couponCode === '' || $couponCode === null) {
             return null;
